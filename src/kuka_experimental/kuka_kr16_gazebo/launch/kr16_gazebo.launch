@@ -1,6 +1,8 @@
-<?xml version = 1.0>
+<?xml version="1.0"?>
 <launch>
 	<arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+
 
   <!-- remap topics to conform to ROS-I specifications -->
   <remap from="/arm_controller/follow_joint_trajectory" to="/joint_trajectory_action" />
@@ -12,6 +14,7 @@
     <arg name="world_name" value="worlds/empty.world"/>
     <arg name="gui" value="true"/>
     <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
   </include>
 
   <!-- urdf xml robot description loaded on the Parameter Server, converting the xacro into a proper urdf file-->

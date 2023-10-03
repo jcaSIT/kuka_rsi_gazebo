@@ -1,0 +1,62 @@
+<launch>
+  <!-- A convenience launch file that launches all of the required nodes to
+       plan and execute motions realized in a Gazebo environment using RViz, MoveIt and the ros_control based
+       KUKA RSI driver from the kuka_rsi_hw_interface package.
+  -->
+ 
+  <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
+  <!--  - if sim=false, a robot_ip argument is required -->
+  <arg name="sim" default="true" doc="Use industrial robot simulator instead of real robot" />
+  <arg name="robot_ip" unless="$(arg sim)" doc="IP of controller (only required if not using industrial simulator)" />
+
+  <!-- By default, we do not start a database (it can be large) -->
+  <arg name="db" default="false" doc="Start the MoveIt database" />
+  <!-- Allow user to specify database location -->
+  <arg name="db_path" default="$(find kuka_kr16_moveit_config)/default_warehouse_mongo_db" doc="Path to database files" />
+
+  <!-- Non-standard joint names -->
+  <rosparam command="load" file="$(find kuka_kr16_support)/config/joint_names_kr16.yaml" />
+
+  <!-- initialize Gazebo simulation -->
+  <include file="$(find kuka_kr16_gazebo)/launch/kr16_gazebo.launch" />
+  <!-- launch ROS-I nodes handleing kinematics, semantic description and joint limits -->
+  <include file="$(find kuka_kr16_moveit_config)/launch/planning_context.launch" >
+    <arg name="load_robot_description" value="false" />
+  </include>
+
+  <!-- run the robot simulator and action interface nodes -->
+  <group if="$(arg sim)">
+    <include file="$(find industrial_robot_simulator)/launch/robot_interface_simulator.launch" >
+        
+    </include>
+  </group>
+
+  <!-- run the "real robot" interface nodes -->
+  <group unless="$(arg sim)">
+    <include file="$(find kuka_kr16_support)/launch/robot_interface_streaming_kr16_rsi.launch" >
+      <arg name="robot_ip" value="$(arg robot_ip)"/>
+    </include>
+  </group>
+
+  <!-- publish the robot state (tf transforms) -->
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+    <param name="use_sim_time" value="true"/>
+  </node>
+
+  <include file="$(find kuka_kr16_moveit_config)/launch/move_group.launch">
+    <arg name="publish_monitored_planning_scene" value="true" />
+  </include>
+
+  <include file="$(find kuka_kr16_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="config" value="true"/>
+  </include>
+
+  <!-- If database loading was enabled, start mongodb as well -->
+  <include file="$(find kuka_kr16_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)">
+    <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
+  </include>
+</launch> 
+
+
