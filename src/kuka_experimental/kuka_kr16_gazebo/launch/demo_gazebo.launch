@@ -19,17 +19,20 @@
 
   <!-- initialize Gazebo simulation -->
   <include file="$(find kuka_kr16_gazebo)/launch/kr16_gazebo.launch" />
+
+  
   <!-- launch ROS-I nodes handleing kinematics, semantic description and joint limits -->
   <include file="$(find kuka_kr16_moveit_config)/launch/planning_context.launch" >
     <arg name="load_robot_description" value="false" />
   </include>
 
-  <!-- run the robot simulator and action interface nodes -->
+  <!-- run the robot simulator and action interface nodes 
   <group if="$(arg sim)">
     <include file="$(find industrial_robot_simulator)/launch/robot_interface_simulator.launch" >
         
     </include>
   </group>
+  -->
 
   <!-- run the "real robot" interface nodes -->
   <group unless="$(arg sim)">
