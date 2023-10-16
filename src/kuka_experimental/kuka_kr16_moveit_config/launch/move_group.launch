@@ -1,6 +1,5 @@
+<?xml version="1.0"?>
 <launch>
-
-  <include file="$(find kuka_kr16_moveit_config)/launch/planning_context.launch" />
 
   <!-- Simulation -->
   <arg name="sim" default="false"/>
@@ -26,6 +25,7 @@
   
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find kuka_kr16_moveit_config)/launch/planning_pipeline.launch.xml">
+  <include file="$(find kuka_kr16_moveit_config)/launch/planning_context.launch" />
     <arg name="pipeline" value="ompl" />
   </include>
 
@@ -56,6 +56,7 @@
 				      move_group/MoveGroupExecuteTrajectoryAction
 				      move_group/MoveGroupKinematicsService
 				      move_group/MoveGroupMoveAction
+				      move_group/MoveGroupExecuteService
 				      move_group/MoveGroupPickPlaceAction
 				      move_group/MoveGroupPlanService
 				      move_group/MoveGroupQueryPlannersService
