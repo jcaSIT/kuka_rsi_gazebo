@@ -1,6 +1,7 @@
+<?xml version="1.0"?>
 <launch>
 
-  <node name="kr16_move_group_interface_tutorial" pkg="moveit_tutorials" type="kr16_move_group_interface_tutorial" respawn="false" output="screen">
+  <node name="kuka_gmo_node" pkg="kuka_gmo" type="kuka_gmo_node" respawn="false" output="screen">
   </node>
 
 </launch>

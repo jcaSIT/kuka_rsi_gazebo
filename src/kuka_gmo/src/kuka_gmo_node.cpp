@@ -33,6 +33,7 @@
  *********************************************************************/
 
 /* Author: Sachin Chitta, Dave Coleman, Mike Lautman */
+#include <simple_collision_dector.h>
 
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
@@ -44,12 +45,18 @@
 #include <moveit_msgs/CollisionObject.h>
 
 #include <moveit_visual_tools/moveit_visual_tools.h>
+#include <control_msgs/JointTrajectoryControllerState.h>
+
 
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "kr16_move_group_interface_tutorial");
+  ros::init(argc, argv, "kuka_gmo_node");
   ros::NodeHandle node_handle;
+
+  simple_collision_dector collision_detector;
+
+  ros::Subscriber feedback_subscriber = node_handle.subscribe("feedback_states", 1000, &simple_collision_dector::feedbackStateCallback, &collision_detector);
   ros::AsyncSpinner spinner(1);
   spinner.start();
 
@@ -167,104 +174,8 @@ int main(int argc, char** argv)
   // and report success on execution of a trajectory.
 
   /* Uncomment below line when working with a real robot */
+  // Move the real robot
   move_group.move();
-
-  // Planning to a joint-space goal
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  //
-  // Let's set a joint space goal and move towards it.  This will replace the
-  // pose target we set above.
-  //
-  // To start, we'll create an pointer that references the current robot's state.
-  // RobotState is the object that contains all the current position/velocity/acceleration data.
-  moveit::core::RobotStatePtr current_state = move_group.getCurrentState();
-  move_group.setStartStateToCurrentState();
-  //
-  // Next get the current set of joint values for the group.
-  std::vector<double> joint_group_positions;
-  current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
-
-  // Now, let's modify one of the joints, plan to the new joint space goal and visualize the plan.
-  joint_group_positions[0] = -1.0;  // radians
-  move_group.setJointValueTarget(joint_group_positions);
-
-  success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-  move_group.execute(my_plan.trajectory_);
-  ROS_INFO_NAMED("tutorial", "Visualizing plan 2 (joint space goal) %s", success ? "" : "FAILED");
-
-  // Visualize the plan in RViz
-  visual_tools.deleteAllMarkers();
-  visual_tools.publishText(text_pose, "Joint Space Goal", rvt::WHITE, rvt::XLARGE);
-  visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
-  visual_tools.trigger();
-  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
-
-  /* Uncomment below line when working with a real robot */
-  move_group.move();
-
-
-
-
-  // Planning with Path Constraints
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  //
-  // Path constraints can easily be specified for a link on the robot.
-  // Let's specify a path constraint and a pose goal for our group.
-  // First define the path constraint.
-  moveit_msgs::OrientationConstraint ocm;
-  ocm.link_name = "tool0";
-  ocm.header.frame_id = "base_link";
-  ocm.orientation.w = 1.0;
-  ocm.absolute_x_axis_tolerance = 0.1;
-  ocm.absolute_y_axis_tolerance = 0.1;
-  ocm.absolute_z_axis_tolerance = 0.1;
-  ocm.weight = 1.0;
-
-  // Now, set it as the path constraint for the group.
-  moveit_msgs::Constraints test_constraints;
-  test_constraints.orientation_constraints.push_back(ocm);
-  move_group.setPathConstraints(test_constraints);
-
-  // We will reuse the old goal that we had and plan to it.
-  // Note that this will only work if the current state already
-  // satisfies the path constraints. So, we need to set the start
-  // state to a new pose.
-  robot_state::RobotState start_state(*move_group.getCurrentState());
-  geometry_msgs::Pose target_pose2;
-  target_pose2.orientation.w = 1.0;
-  target_pose2.position.x = 0.55;
-  target_pose2.position.y = 1.05;
-  target_pose2.position.z = 1;
-  start_state.setFromIK(joint_model_group, target_pose2);
-  move_group.setStartStateToCurrentState();
-
-  // Now we will plan to the earlier pose target from the new
-  // start state that we have just created.
-  move_group.setPoseTarget(target_pose2);
-
-  // Planning with constraints can be slow because every sample must call an inverse kinematics solver.
-  // Lets increase the planning time from the default 5 seconds to be sure the planner has enough time to succeed.
-  move_group.setPlanningTime(10.0);
-
-  success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-  ROS_INFO_NAMED("tutorial", "Visualizing plan 3 (constraints) %s", success ? "" : "FAILED");
-
-  // Visualize the plan in RViz
-  visual_tools.deleteAllMarkers();
-  visual_tools.publishAxisLabeled(move_group.getCurrentPose().pose, "start");
-  visual_tools.publishAxisLabeled(target_pose1, "goal");
-  visual_tools.publishText(text_pose, "Constrained Goal", rvt::WHITE, rvt::XLARGE);
-  visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
-  visual_tools.trigger();
-  visual_tools.prompt("next step");
-  move_group.execute(my_plan.trajectory_);
-  move_group.move();
-  // When done with the path constraint be sure to clear it.
-  move_group.clearPathConstraints();
-
-
-
-  // END_TUTORIAL
 
   ros::shutdown();
   return 0;

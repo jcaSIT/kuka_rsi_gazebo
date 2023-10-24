@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <!-- A convenience launch file that launches all of the required nodes to
        plan and execute motions realized in a Gazebo environment using RViz, MoveIt and the ros_control based

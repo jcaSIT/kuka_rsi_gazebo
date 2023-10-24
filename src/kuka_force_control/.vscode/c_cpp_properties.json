@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "${default}",
+                "limitSymbolsToIncludedHeaders": false
+            },
+            "includePath": [
+                "/opt/ros/melodic/include/**",
+                "/home/ylab/kuka_test_ws/src/kuka_experimental/kuka_eki_hw_interface/include/**",
+                "/home/ylab/kuka_test_ws/src/kuka_gmo/include/**",
+                "/home/ylab/kuka_test_ws/src/kuka_experimental/kuka_rsi_hw_interface/include/**",
+                "/usr/include/**",
+                "/usr/include/eigen3"
+            ],
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "c++14"
+        }
+    ],
+    "version": 4
+}
