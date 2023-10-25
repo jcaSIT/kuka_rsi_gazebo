@@ -59,6 +59,8 @@
   <build_depend>tf2_eigen</build_depend>
   <build_depend>tf2_geometry_msgs</build_depend>
   <build_depend>tf2_ros</build_depend>
+  <build_depend>orocos_kdl</build_depend>
+  <build_depend>kdl_parser</build_depend>
   <build_export_depend>moveit_core</build_export_depend>
   <build_export_depend>moveit_ros_planning</build_export_depend>
   <build_export_depend>moveit_ros_planning_interface</build_export_depend>
@@ -69,6 +71,8 @@
   <build_export_depend>tf2_eigen</build_export_depend>
   <build_export_depend>tf2_geometry_msgs</build_export_depend>
   <build_export_depend>tf2_ros</build_export_depend>
+  <build_export_depend>orocos_kdl</build_export_depend>
+  <build_export_depend>kdl_parser</build_export_depend>
   <exec_depend>moveit_core</exec_depend>
   <exec_depend>moveit_ros_planning</exec_depend>
   <exec_depend>moveit_ros_planning_interface</exec_depend>
@@ -79,7 +83,8 @@
   <exec_depend>tf2_eigen</exec_depend>
   <exec_depend>tf2_geometry_msgs</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
-
+  <exec_depend>orocos_kdl</exec_depend>
+  <exec_depend>kdl_parser</exec_depend> 
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
