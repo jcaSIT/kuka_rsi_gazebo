@@ -13,13 +13,15 @@ simple_collision_dector::simple_collision_dector(std::string robot_description)
     
 
     ROS_INFO("Generating KDL tree of robot from robot description: %s", robot_description.c_str());
-    if (!kdl_parser::treeFromString("/" + robot_description, robot_model_KDL))
+
+    robot_model_KDL = KDL::Tree("base_link");
+    if (!kdl_parser::treeFromParam("robot_description", robot_model_KDL))
     {
       ROS_ERROR("Failed to construct kdl tree");
       ROS_BREAK();
     }
 
-
+    ROS_INFO("Generating forward dynamics");
     gravity.x(0.0);
     gravity.y(0.0);
     gravity.z(-9.82);
@@ -31,8 +33,9 @@ simple_collision_dector::simple_collision_dector(std::string robot_description)
     C = new KDL::JntArray(robot_chain.getNrOfJoints());
     G = new KDL::JntArray(robot_chain.getNrOfJoints());
 
-
+    ROS_INFO("Generating KDL dynamic chain param");
     robot_dynamics = new KDL::ChainDynParam(robot_chain, gravity);
+    ROS_INFO("Generating forward dynamics");
 
 }
 
@@ -46,9 +49,10 @@ void simple_collision_dector::updateStateKDL()
 {
     for(int i = 0; i < q->rows(); i ++)
     {
-        q->data[i] = queue.at(i)->actual.positions[i];
-        qdot->data[i] = queue.at(i)->actual.velocities[i];
-        qdotdot->data[i] = queue.at(i)->actual.accelerations[i];
+        control_msgs::JointTrajectoryControllerState::ConstPtr current_state = queue.front();
+        q->data(i) = current_state->actual.positions.at(i);
+        qdot->data(i) = current_state->actual.velocities.at(i);
+        //qdotdot->data(i) = current_state->actual.accelerations.at(i);
     }
 
 }
@@ -63,14 +67,15 @@ void simple_collision_dector::feedbackStateCallback(const control_msgs::JointTra
     robot_dynamics->JntToMass(*q, *B);
     robot_dynamics->JntToCoriolis(*q, *qdot, *C);
     robot_dynamics->JntToGravity(*q, *G);
-    // std::cout << "MSG data: ";
-    // for (auto i : queue.at(0)->error.positions)
-    //     std::cout << i << " ";
-    // std::cout << "\n";
+    std::cout << "MSG data: ";
+    for (auto i : queue.at(0)->error.positions)
+        std::cout << i << " ";
+    std::cout << "\n";
 
-    // std::cout << "q:" << q->rows() << " data: "  << q->data << "\n";
-
-    // std::cout << "C matrix:\n" << C->data << "\n";
+    std::cout << "q:" << q->rows() << " data: "  << q->data << "\n";
+    std::cout << "B matrix:\n" << B->data << "\n";
+    std::cout << "C matrix:\n" << C->data << "\n";
+    std::cout << "G matrix:\n" << G->data << "\n";
 
     // for (int i = 0; i < B->rows(); i++)
     //     for (int l = 0; l < B->columns(); l++)
