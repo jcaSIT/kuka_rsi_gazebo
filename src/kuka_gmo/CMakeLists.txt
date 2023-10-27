@@ -144,6 +144,7 @@ include_directories(
 add_executable(${PROJECT_NAME}_node 
   src/kuka_gmo_node.cpp
   src/simple_collision_dector.cpp
+  src/chainexternalwrenchestimator.cpp
 )
 
 ## Rename C++ executable without prefix

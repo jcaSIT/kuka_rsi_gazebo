@@ -54,6 +54,8 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "kuka_gmo_node");
   ros::NodeHandle node_handle;
 
+  // Generalized momentum oberserver based on https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8062635
+  // Implemented using KDL and KDL parser
   simple_collision_dector collision_detector("robot_description");
 
   ros::AsyncSpinner spinner(1);

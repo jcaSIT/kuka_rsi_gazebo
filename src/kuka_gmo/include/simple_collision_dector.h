@@ -11,8 +11,12 @@
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 
 // Robot Model calculation
+#include <kdl/chain.hpp>
 #include <kdl/chaindynparam.hpp>
+#include "chainexternalwrenchestimator.hpp"
+
 #include <kdl_parser/kdl_parser.hpp>
+
 
 
 
@@ -39,7 +43,29 @@ private:
     KDL::JntArray* q;
     KDL::JntArray* qdot;
     KDL::JntArray* qdotdot;
-    KDL::JntArray* tau;
+    KDL::JntArray* qdotdot_external;
+    KDL::JntArray* qdotdot_external_old;
+    KDL::JntArray* collision_threshold;
+    KDL::Wrench* wrench;
+
+    // First order momentum observer
+    KDL::ChainExternalWrenchEstimator* momentum_observer;
+
+    // State Space Observer
+
+    Eigen::MatrixXd* A_obs;
+    Eigen::MatrixXd* B_obs;
+    Eigen::MatrixXd* C_obs;
+    Eigen::MatrixXd* F_obs;
+
+    // Design parameters for SSO and KF
+    Eigen::MatrixXd* A_ext;
+    Eigen::MatrixXd* w_ext;
+
+
+    bool this_is_bad_coding = true;
+
+
 
 
 
