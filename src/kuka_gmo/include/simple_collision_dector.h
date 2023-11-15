@@ -7,6 +7,7 @@
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/robot_model/robot_model.h>
 #include <moveit/robot_state/robot_state.h>
+#include <moveit/move_group_interface/move_group_interface.h>
 #include <control_msgs/JointTrajectoryControllerState.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 
@@ -23,6 +24,11 @@
 class simple_collision_dector
 {
 private:
+
+    // MoveIt "protective stop"
+    moveit::planning_interface::MoveGroupInterfacePtr move_group;
+
+
 
     // Robot Model
     robot_model_loader::RobotModelLoader robot_model_loader;
@@ -77,7 +83,7 @@ private:
 
 
 public:
-    simple_collision_dector(std::string robot_description);
+    simple_collision_dector(std::string robot_description, moveit::planning_interface::MoveGroupInterfacePtr move_group_ptr);
 
     void add_new_msg(control_msgs::JointTrajectoryControllerState::ConstPtr new_msg);
     void feedbackStateCallback(const control_msgs::JointTrajectoryControllerState::ConstPtr& msg);

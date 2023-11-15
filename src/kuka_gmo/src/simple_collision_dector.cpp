@@ -1,8 +1,9 @@
 #include "simple_collision_dector.h"
 
 
-simple_collision_dector::simple_collision_dector(std::string robot_description)
+simple_collision_dector::simple_collision_dector(std::string robot_description, moveit::planning_interface::MoveGroupInterfacePtr move_group_ptr)
 {
+    move_group = move_group_ptr;
     ROS_INFO("Loading robotmodel from robot description: %s", robot_description.c_str());
     robot_model_loader = robot_model_loader::RobotModelLoader(robot_description);
     ROS_INFO("Loading kinematic model");
@@ -48,7 +49,10 @@ simple_collision_dector::simple_collision_dector(std::string robot_description)
     {
         collision_threshold->data(i) = threshold_arr[i];
     }
-    
+
+    // Estimate jnt torque for intial position
+    momentum_observer->JntToExtWrench(*q, *qdot, *qdotdot, *wrench);
+    momentum_observer->getEstimatedJntTorque(*qdotdot_external);
 
 
 }
@@ -89,9 +93,9 @@ void simple_collision_dector::feedbackStateCallback(const control_msgs::JointTra
         std::cout << i << " ";
     std::cout << "\n";
 
-    std::cout << "q:" << q->rows() << " data: "  << q->data << "\n";
-    std::cout << "qdot:" << qdot->rows() << " data: "  << qdot->data << "\n";
-    std::cout << "qdotdot:" << qdotdot->rows() << " data: "  << qdotdot->data << "\n";
+    std::cout << "q: "  << q->data << "\n";
+    //std::cout << "qdot:" << qdot->rows() << " data: "  << qdot->data << "\n";
+    //std::cout << "qdotdot:" << qdotdot->rows() << " data: "  << qdotdot->data << "\n";
     //std::cout << "B matrix:\n" << B->data << "\n";
     //std::cout << "C matrix:\n" << C->data << "\n";
     //std::cout << "G matrix:\n" << G->data << "\n";
@@ -101,36 +105,33 @@ void simple_collision_dector::feedbackStateCallback(const control_msgs::JointTra
     momentum_observer->JntToExtWrench(*q, *qdot, *qdotdot, *wrench);
     
 
-    std::cout << "Estimated Wrench\ntorque: ";
-    bool collision = false;
-    for (int i = 0; i < 3; i++)
-    {
-        std::cout << wrench->torque.data[i] << " ";
-    }
-    std::cout << "force: ";
-    for (int i = 0; i < 3; i++)
-    {
-        std::cout << wrench->force.data[i] << " ";
-    }
-    qdotdot_external->data.setZero();
+    // std::cout << "Estimated Wrench\ntorque: ";
+    
+    // for (int i = 0; i < 3; i++)
+    // {
+    //     std::cout << wrench->torque.data[i] << " ";
+    // }
+    // std::cout << "   force: ";
+    // for (int i = 0; i < 3; i++)
+    // {
+    //     std::cout << wrench->force.data[i] << " ";
+    // }
+
+
     momentum_observer->getEstimatedJntTorque(*qdotdot_external);
     
     std::cout << "\nEstimated joint  torque:\n" << qdotdot_external->data;
 
-    if (qdotdot_external_old != nullptr && qdotdot_external_old->rows() && !this_is_bad_coding)
+
+    Eigen::VectorXd rate_of_change = qdotdot_external->data - qdotdot_external_old->data;
+    bool collision = false;
+    std::cout << "\nEstimated rate of change: \n" << rate_of_change;
+    for (int i = 0; i < qdotdot_external->rows(); i++)
     {
-        Eigen::VectorXd rate_of_change = qdotdot_external->data - qdotdot_external_old->data;
-        std::cout << "Estimated rate of change: " << rate_of_change;
-        for (int i = 0; i < qdotdot_external->rows(); i++)
-        {
-            if(abs(rate_of_change(i)) > collision_threshold->data(i))
-                collision = true;
-        }
+        if(abs(rate_of_change(i)) > collision_threshold->data(i))
+            collision = true;
     }
-    else
-    {
-        this_is_bad_coding = false; // its stil badd but idk man..
-    }
+
     
     
     qdotdot_external_old->data = qdotdot_external->data;
@@ -138,6 +139,7 @@ void simple_collision_dector::feedbackStateCallback(const control_msgs::JointTra
 
     if(collision)
     {
+        move_group->stop();
         ROS_ERROR("Bonk!!");
         ros::waitForShutdown();
 
