@@ -30,8 +30,9 @@ simple_collision_dector::simple_collision_dector(std::string robot_description, 
     q = new KDL::JntArray(robot_chain.getNrOfJoints());
     qdot = new KDL::JntArray(robot_chain.getNrOfJoints());
     qdotdot = new KDL::JntArray(robot_chain.getNrOfJoints());
-    qdotdot_external = new KDL::JntArray(robot_chain.getNrOfJoints());
-    qdotdot_external_old = new KDL::JntArray(robot_chain.getNrOfJoints());
+    jnt_torque = new KDL::JntArray(robot_chain.getNrOfJoints());
+    jnt_torque_external = new KDL::JntArray(robot_chain.getNrOfJoints());
+    jnt_torque_external_old = new KDL::JntArray(robot_chain.getNrOfJoints());
     collision_threshold = new KDL::JntArray(robot_chain.getNrOfJoints());
     wrench = new KDL::Wrench;
     B = new KDL::JntSpaceInertiaMatrix(robot_chain.getNrOfJoints());
@@ -42,19 +43,15 @@ simple_collision_dector::simple_collision_dector(std::string robot_description, 
     robot_dynamics = new KDL::ChainDynParam(robot_chain, gravity);
     ROS_INFO("Generating forward dynamics");
 
-    momentum_observer = new KDL::ChainExternalWrenchEstimator(robot_chain, gravity, 250, 1, 0.5);
+    extWrenchEstimator = new KDL::ChainExternalWrenchEstimator(robot_chain, gravity, 250, 1, 0.5);
 
-    double threshold_arr[6] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+    double threshold_arr[6] = {10, 10, 5, 5, 3, 3};
     for ( int i = 0; i < 6; i++)
     {
         collision_threshold->data(i) = threshold_arr[i];
     }
 
-    // Estimate jnt torque for intial position
-    momentum_observer->JntToExtWrench(*q, *qdot, *qdotdot, *wrench);
-    momentum_observer->getEstimatedJntTorque(*qdotdot_external);
-
-
+    updateExternalWrench();
 }
 
 void simple_collision_dector::add_new_msg(control_msgs::JointTrajectoryControllerState::ConstPtr new_msg)
@@ -74,88 +71,63 @@ void simple_collision_dector::updateStateKDL()
     }
 
 }
-void simple_collision_dector::feedbackStateCallback(const control_msgs::JointTrajectoryControllerState::ConstPtr& msg)
-{
-    add_new_msg(msg);
-    
-    // Update joint postions veloceties and accelerations
-    updateStateKDL();
 
+void simple_collision_dector::updateExternalWrench()
+{
     // update mass matrix B, coriolos matrix C and gravity matrix G
     robot_dynamics->JntToMass(*q, *B);
     robot_dynamics->JntToCoriolis(*q, *qdot, *C);
     robot_dynamics->JntToGravity(*q, *G);
 
 
+    // use the DESIRED joint acceleration to calculate the corresponding joint torque
+    jnt_torque->data = B->data * qdotdot->data + C->data * qdot->data + G ->data;
 
-    std::cout << "MSG data: ";
-    for (auto i : queue.at(0)->error.positions)
-        std::cout << i << " ";
-    std::cout << "\n";
+    // estimate the external wrench using the actual joint positions (q), velocities (q_dot) and the joint torque
+    extWrenchEstimator->JntToExtWrench(*q, *qdot, *jnt_torque, *wrench);
 
-    std::cout << "q: "  << q->data << "\n";
-    //std::cout << "qdot:" << qdot->rows() << " data: "  << qdot->data << "\n";
-    //std::cout << "qdotdot:" << qdotdot->rows() << " data: "  << qdotdot->data << "\n";
-    //std::cout << "B matrix:\n" << B->data << "\n";
-    //std::cout << "C matrix:\n" << C->data << "\n";
-    //std::cout << "G matrix:\n" << G->data << "\n";
+    // get the estimated resulting jnt torques
+    extWrenchEstimator->getEstimatedJntTorque(*jnt_torque_external);
 
+}
 
+void simple_collision_dector::feedbackStateCallback(const control_msgs::JointTrajectoryControllerState::ConstPtr &msg)
+{
+    
+    add_new_msg(msg);
+    // Update joint postions veloceties and accelerations
+    updateStateKDL();
 
-    momentum_observer->JntToExtWrench(*q, *qdot, *qdotdot, *wrench);
+    // Update the external wrench and the resulting external joint torque
+    updateExternalWrench();
     
 
-    // std::cout << "Estimated Wrench\ntorque: ";
-    
-    // for (int i = 0; i < 3; i++)
-    // {
-    //     std::cout << wrench->torque.data[i] << " ";
-    // }
-    // std::cout << "   force: ";
-    // for (int i = 0; i < 3; i++)
-    // {
-    //     std::cout << wrench->force.data[i] << " ";
-    // }
-
-
-    momentum_observer->getEstimatedJntTorque(*qdotdot_external);
-    
-    std::cout << "\nEstimated joint  torque:\n" << qdotdot_external->data;
-
-
-    Eigen::VectorXd rate_of_change = qdotdot_external->data - qdotdot_external_old->data;
-    bool collision = false;
-    std::cout << "\nEstimated rate of change: \n" << rate_of_change;
-    for (int i = 0; i < qdotdot_external->rows(); i++)
+    // Ensure the queue is full.
+    if(queue.back() != nullptr)
     {
-        if(abs(rate_of_change(i)) > collision_threshold->data(i))
-            collision = true;
-    }
-
-    
-    
-    qdotdot_external_old->data = qdotdot_external->data;
-
-
-    if(collision)
-    {
-        move_group->stop();
-        ROS_ERROR("Bonk!!");
-        ros::waitForShutdown();
-
-    }
-    // KDL::JntArray p(q->rows());
-    // p.data = (*B).data * (*qdot).data;
-
-
-    // for (int i = 0; i < B->rows(); i++)
-    //     for (int l = 0; l < B->columns(); l++)
-    //     {
-    //         std::cout << B->data() << " "; 
-    //     }
+        //The rate of change of the joint torque caused by an external wrench
+        Eigen::VectorXd rate_of_change = (jnt_torque_external->data - jnt_torque_external_old->data) / (queue[0]->header.stamp.toSec() - queue[1]->header.stamp.toSec() );
+        bool collision = false;
+        std::cout << "\nEstimated rate of change: \n" << rate_of_change << '\n';
         
+        for (int i = 0; i < jnt_torque->rows(); i++)
+        {
+            if(abs(rate_of_change(i)) > collision_threshold->data(i))
+                collision = true;
+        }
 
-    
+        jnt_torque_external_old->data = jnt_torque_external->data;
+
+
+        if(collision)
+        {
+            move_group->stop();
+            std::cout << "\nRate of change of external wrench.\n" << rate_of_change << '\n';
+            ROS_ERROR("Experienced an external wrench that exceeded the safety limit (possible collision aborting)");
+            ros::waitForShutdown();
+
+        }
+    }
 
 
 }
