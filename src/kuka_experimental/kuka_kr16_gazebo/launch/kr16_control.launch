@@ -1,11 +1,12 @@
+<?xml version="1.0"?>
 <launch>
-
+  <arg name="controller_type" default="arm_controller"/>
   <!-- load the joint state controller -->
   <rosparam file="$(find kuka_kr16_gazebo)/config/joint_state_controller.yaml" command="load" />
   <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn joint_state_controller" />
 
   <!-- load the arm controller -->
-  <rosparam file="$(find kuka_kr16_gazebo)/config/kr16_arm_controller.yaml" command="load" />
-  <node name="kuka_kr16_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller" />
+  <rosparam file="$(find kuka_kr16_gazebo)/config/kr16_$(arg controller_type).yaml" command="load" />
+  <node name="kuka_kr16_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn $(arg controller_type)" />
   
 </launch>

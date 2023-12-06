@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <launch>
-	<arg name="paused" default="false"/>
+  <arg name="paused" default="true"/>
   <arg name="use_sim_time" default="true"/>
-
+  <arg name="controller_type" default="arm_controller"/>
 
   <!-- remap topics to conform to ROS-I specifications -->
   <remap from="/arm_controller/follow_joint_trajectory" to="/joint_trajectory_action" />
   <remap from="/arm_controller/state" to="/feedback_states" />
   <remap from="/arm_controller/command" to="/joint_path_command"/>
+
+  <rosparam file="$(find kuka_kr16_gazebo)/config/gazebo_ros_control.yaml" command="load"/>
 
   <!-- startup simulated world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -21,10 +23,19 @@
   <include file="$(find kuka_kr16_gazebo)/launch/load_kr16.launch" />
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
-  <node name="kuka_kr16_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model kuka_kr16" />
+  <node name="kuka_kr16_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model kuka_kr16
+	  -J joint_a1 0
+	  -J joint_a2 -1.57
+	  -J joint_a3 1.57
+	  -J joint_a4 0
+	  -J joint_a5 1.57
+	  -J joint_a6 0
+	  -unpause"/>
 
 
   <!-- init and start Gazebo ros_control interface -->
-  <include file="$(find kuka_kr16_gazebo)/launch/kr16_control.launch"/>
+  <include file="$(find kuka_kr16_gazebo)/launch/kr16_control.launch">
+     <arg name="controller_type" value="$(arg controller_type)"/>
+  </include>	  
 
 </launch>

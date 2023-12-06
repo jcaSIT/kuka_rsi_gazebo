@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+	<node name="kuka_rsi_hardware_interface_node" pkg="kuka_rsi_hw_interface" type="kuka_hardware_interface_node"/>
+</launch>
