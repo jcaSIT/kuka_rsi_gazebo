@@ -1,8 +1,38 @@
+# /gazebo_ros_control:
+# pid_gains:
+# joint_a1:
+# p: 100.0
+# i: 0.01
+# d: 10.0
+# joint_a2:
+# p: 100.0
+# i: 0.01
+# d: 10.0
+# joint_a3:
+# p: 100.0
+# i: 0.01
+# d: 10.0
+# joint_a4:
+# p: 100.0
+# i: 0.01
+# d: 10.0
+# joint_a5:
+# p: 100.0
+# i: 0.01
+# d: 10.0
+# joint_a6:
+# p: 100.0
+# i: 0.01
+# d: 10.0
+
+
+
+
 gazebo_ros_control/pid_gains:
-    joint_a1: {p: 300.0, i: 0.1, d: 30.0}
-    joint_a2: {p: 100.0, i: 0.1, d: 10.0}
-    joint_a3: {p: 100.0, i: 0.1, d: 10.0}
-    joint_a4: {p: 100.0, i: 0.1, d: 10.0}
-    joint_a5: {p: 10.0, i: 0.1, d: 1.0}
-    joint_a6: {p: 10.0, i: 0.1, d: 1.0}
+    joint_a1: {p: 3000.0, i: 1, d: 300.0}
+    joint_a2: {p: 1000.0, i: 1, d: 100.0}
+    joint_a3: {p: 1000.0, i: 1, d: 100.0}
+    joint_a4: {p: 1000.0, i: 1, d: 100.0}
+    joint_a5: {p: 100.0, i: 1, d: 10.0}
+    joint_a6: {p: 100.0, i: 1, d: 10.0}
 
