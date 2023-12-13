@@ -1,8 +1,15 @@
 #include <ros/ros.h>
+#include <ros/console.h>
 
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <std_msgs/Float64MultiArray.h>
+
+#include <urdf/model.h>
+#include <joint_limits_interface/joint_limits.h>
+#include <joint_limits_interface/joint_limits_urdf.h>
+#include <joint_limits_interface/joint_limits_rosparam.h>
+
 
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
@@ -12,8 +19,8 @@
 
 #include <tf2_kdl/tf2_kdl.h>
 
-
 #include <mutex>
+#include <map>
 
 
 class simple_position_controller
@@ -27,6 +34,13 @@ private:
 
     KDL::JntArray* q_current;
     KDL::JntArray* q_target;
+    KDL::JntArray* q_limit_min;
+    KDL::JntArray* q_limit_max;
+    KDL::JntArray* q_home;
+
+    std::map<std::string, joint_limits_interface::JointLimits> joint_limits_map;
+
+
     KDL::ChainIkSolverPos_LMA* ik_solver;
     KDL::ChainFkSolverPos_recursive* fk_solver;
 
@@ -39,6 +53,9 @@ private:
     ros::Publisher joint_target_publisher;
 
 
+    bool isDefault(const KDL::Frame& frame);
+
+
 public:
     /**
      * Constructor for the collision detector. It uses its own internal model of the robot to estimate collisions
@@ -46,6 +63,9 @@ public:
     */
     simple_position_controller(std::string robot_description);
     ~simple_position_controller();
+
+    void printJointLimits(const std::map<std::string, joint_limits_interface::JointLimits>& joint_limits_map);
+
 
     void convertROSTFToKDLFrame(const geometry_msgs::TransformStamped& tf_msg, KDL::Frame& kdl_frame);
 
@@ -69,6 +89,9 @@ public:
     void controllerCallback(const sensor_msgs::JointState joint_msg);
 
     void targetPoseCallback(const geometry_msgs::TransformStamped& tf_msg);
+
+
+    std::map<std::string, joint_limits_interface::JointLimits> getJointLimitsFromURDF(const std::string& param_name);
 
 
 
