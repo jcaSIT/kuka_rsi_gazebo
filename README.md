@@ -1,6 +1,15 @@
 # Repo overview
 This repo contains a RSI interface and a simulation environment for the KUKA KR16 industrial robot. It was developed for YLab internal use.
 The repo allows for simulation in gazebo using either trajectory or postion control. 
+
+## Relevant launch files
+### Gazebo demo
+To launch a simple demo of the gazebo simulation run:
+
+### GMO demo
+
+### Postion control demo
+
 ## Trajectory controller
 The trajectory controller is a MoveIt! melodic implementation that is setup to work both as standard or as simulated in Gazebo. The trajectory controller has serveral planners aviable thanks to MoveIt! and is STRICTLY an oflline controller.
 
