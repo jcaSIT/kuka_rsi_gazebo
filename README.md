@@ -4,11 +4,31 @@ The repo allows for simulation in gazebo using either trajectory or postion cont
 
 ## Relevant launch files
 ### Gazebo demo
-To launch a simple demo of the gazebo simulation run:
+To launch a simple demo of the gazebo simulation run:\n roslaunch kuka_kr16_gazebo demo_gazebo.launch
 
 ### GMO demo
+To run the a gmo first launch the Gazebo demo then run:\n roslaunch kuka_gmo kuka_gmo.launch\n
+The using RVIZ generate and execute a plan into the boxes placed by the robot. Upon collision the robot should stop moving and the momentum observer will throw a collision error.
 
 ### Postion control demo
+To run the postion control demo run:\n roslaunch kuka_position_control kuka_kr16_position_controller.launch\n
+In a seperate terminal run:\n rostopic pub /target_pose geometry_msgs/TransformStamped "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+child_frame_id: ''
+transform:
+  translation:
+    x: 1.0
+    y: 0.0
+    z: 0.5
+  rotation:
+    x: 0.0
+    y: 0.707
+    z: 0.0
+    w: 0.707"
 
 ## Trajectory controller
 The trajectory controller is a MoveIt! melodic implementation that is setup to work both as standard or as simulated in Gazebo. The trajectory controller has serveral planners aviable thanks to MoveIt! and is STRICTLY an oflline controller.
