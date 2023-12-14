@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 
 <robot name="kuka_kr16_2" xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:include filename="$(find kuka_kr16_gazebo)/urdf/kuka_kr16_2_macro.xacro"/>	
+  <xacro:include filename="$(find kuka_kr16_gazebo)/urdf/kuka_kr16_2_effort_macro.xacro"/>	
   <xacro:kuka_kr16_gazebo prefix=""/>
 
   <!-- Fix robot to Gazebo world -->

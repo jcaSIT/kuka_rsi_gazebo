@@ -20,7 +20,9 @@
   </include>
 
   <!-- urdf xml robot description loaded on the Parameter Server, converting the xacro into a proper urdf file-->
-  <include file="$(find kuka_kr16_gazebo)/launch/load_kr16.launch" />
+  <include file="$(find kuka_kr16_gazebo)/launch/load_kr16.launch">
+    <arg name="controller_type" value="$(arg controller_type)"/>
+  </include>
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
   <node name="kuka_kr16_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model kuka_kr16

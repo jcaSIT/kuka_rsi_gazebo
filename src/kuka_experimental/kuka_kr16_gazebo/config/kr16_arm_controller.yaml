@@ -19,3 +19,20 @@ arm_controller:
   stop_trajectory_duration: 0.5
   state_publish_rate:  25
   action_monitor_rate: 10
+
+# pos_controller:
+#   type: "position_controllers/JointGroupPositionController"
+#   joints:
+#      - joint_a1
+#      - joint_a2
+#      - joint_a3
+#      - joint_a4
+#      - joint_a5
+#      - joint_a6
+#   pid_gains:
+#     joint_a1: {p: 100.0, i: 0.01, d: 10.0}
+#     joint_a2: {p: 100.0, i: 0.01, d: 10.0}
+#     joint_a3: {p: 100.0, i: 0.01, d: 10.0}
+#     joint_a4: {p: 100.0, i: 0.01, d: 10.0}
+#     joint_a5: {p: 100.0, i: 0.01, d: 10.0}
+#     joint_a6: {p: 100.0, i: 0.01, d: 10.0}

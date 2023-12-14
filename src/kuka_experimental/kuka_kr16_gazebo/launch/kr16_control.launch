@@ -5,18 +5,24 @@
   <rosparam file="$(find kuka_kr16_gazebo)/config/joint_state_controller.yaml" command="load" />
   <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn joint_state_controller" />
 
-  <!-- load the appropriate controller -->
-  <rosparam file="$(find kuka_kr16_gazebo)/config/kr16_$(arg controller_type).yaml" command="load" />
-  
-
   <!-- Spawn the individual links controllers if in postion control-->
   <group if="$(eval controller_type == 'pos_controller')">
+    <rosparam file="$(find kuka_kr16_gazebo)/config/gazebo_ros_control.yaml" command="load"/>
+    
+    <!-- load the appropriate controller -->
+    <rosparam file="$(find kuka_kr16_gazebo)/config/kr16_effort_controller.yaml" command="load" />
     <node name="controller_spawner" pkg="controller_manager" type="spawner" args="joint_a1_position_controller joint_a2_position_controller joint_a3_position_controller joint_a4_position_controller joint_a5_position_controller joint_a6_position_controller"/>
   </group>
 
   <!-- Spawn the arm controller if in trajectory control-->
   <group if="$(eval controller_type == 'arm_controller')">
-    <node name="kuka_kr16_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn $(arg controller_type)" />
+    <!-- remap topics to conform to ROS-I specifications -->
+    <remap from="/arm_controller/follow_joint_trajectory" to="/joint_trajectory_action" />
+    <remap from="/arm_controller/state" to="/feedback_states" />
+    <remap from="/arm_controller/command" to="/joint_path_command"/>
+    <!-- load the appropriate controller -->
+    <rosparam file="$(find kuka_kr16_gazebo)/config/kr16_arm_controller.yaml" command="load" />
+    <node name="kuka_kr16_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller" />
   </group>
   
   

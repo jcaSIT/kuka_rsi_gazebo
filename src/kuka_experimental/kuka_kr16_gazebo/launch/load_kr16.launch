@@ -1,3 +1,16 @@
 <launch>
-  <param name="robot_description" command="$(find xacro)/xacro '$(find kuka_kr16_gazebo)/urdf/kuka_kr16_2.xacro'" />
+  <arg name="controller_type" default="arm_controller"/>
+
+  <!-- Load the joint effort controlled model if in position control mode-->
+  <group if="$(eval controller_type == 'pos_controller')">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find kuka_kr16_gazebo)/urdf/kuka_kr16_2_effort.xacro'" />
+  </group>
+
+  <!-- Load the joint position controlled model if in arm control mode-->
+  <group if="$(eval controller_type == 'arm_controller')">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find kuka_kr16_gazebo)/urdf/kuka_kr16_2_position.xacro'" />
+  </group>
+
+
+  
 </launch>
