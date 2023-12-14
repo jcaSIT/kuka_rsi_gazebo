@@ -3,7 +3,7 @@ This repo contains a RSI interface and a simulation environment for the KUKA KR1
 The repo allows for simulation in gazebo using either trajectory or postion control. 
 
 
-For installation follow the guide in: [INSTALLTION.md](https://github.com/user/repo/blob/branch/other_file.m)
+For installation follow the guide in: [INSTALLTION.md](https://github.com/jcaSIT/kuka_rsi_test/blob/master/INSTALTION.md)
 ## Relevant launch files
 Some helpful launch files to get you started!
 ### Gazebo demo
