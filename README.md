@@ -3,16 +3,32 @@ This repo contains a RSI interface and a simulation environment for the KUKA KR1
 The repo allows for simulation in gazebo using either trajectory or postion control. 
 
 ## Relevant launch files
+Some helpful launch files to get you started!
 ### Gazebo demo
-To launch a simple demo of the gazebo simulation run:\n roslaunch kuka_kr16_gazebo demo_gazebo.launch
+To launch a simple demo of the gazebo simulation run:
+
+ roslaunch kuka_kr16_gazebo demo_gazebo.launch
 
 ### GMO demo
-To run the a gmo first launch the Gazebo demo then run:\n roslaunch kuka_gmo kuka_gmo.launch\n
+To run the a gmo first launch the Gazebo demo then run:
+
+roslaunch kuka_gmo kuka_gmo.launch
+
+
 The using RVIZ generate and execute a plan into the boxes placed by the robot. Upon collision the robot should stop moving and the momentum observer will throw a collision error.
 
 ### Postion control demo
-To run the postion control demo run:\n roslaunch kuka_position_control kuka_kr16_position_controller.launch\n
-In a seperate terminal run:\n rostopic pub /target_pose geometry_msgs/TransformStamped "header:
+To run the postion control demo run:
+
+ roslaunch kuka_position_control kuka_kr16_position_controller.launch
+
+
+
+
+In a seperate terminal run:
+
+
+rostopic pub /target_pose geometry_msgs/TransformStamped "header:
   seq: 0
   stamp:
     secs: 0
