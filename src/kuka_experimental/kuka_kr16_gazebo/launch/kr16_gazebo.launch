@@ -9,8 +9,6 @@
   <remap from="/arm_controller/state" to="/feedback_states" />
   <remap from="/arm_controller/command" to="/joint_path_command"/>
 
-  <rosparam file="$(find kuka_kr16_gazebo)/config/gazebo_ros_control.yaml" command="load"/>
-
   <!-- startup simulated world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find kuka_kr16_gazebo)/worlds/collision_world.world"/>
