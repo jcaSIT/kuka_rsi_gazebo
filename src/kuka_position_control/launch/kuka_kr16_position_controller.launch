@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- launch controller and postion to effort commands -->
+  <node name="kuka_position_control_node" pkg="kuka_position_control" type="kuka_position_control_node"/> 
+  <node name="pos_command_to_effort_node" pkg="kuka_position_control" type="pos_command_to_effort"/> 
+
+</launch>

@@ -162,12 +162,21 @@ add_executable(${PROJECT_NAME}_node
   src/kuka_position_control.cpp
 )
 
-
 add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(${PROJECT_NAME}_node
    ${catkin_LIBRARIES}
 )
+
+add_executable(pos_command_to_effort
+src/pos_command_to_effort
+)
+add_dependencies(pos_command_to_effort ${catkin_EXPORTED_TARGETS})
+target_link_libraries(pos_command_to_effort ${catkin_LIBRARIES})
+
+
+
+
 
 #############
 ## Install ##
@@ -186,6 +195,7 @@ target_link_libraries(${PROJECT_NAME}_node
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 install(TARGETS ${PROJECT_NAME}_node
+  pos_command_to_effort
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
