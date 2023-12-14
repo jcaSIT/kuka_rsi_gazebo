@@ -169,12 +169,16 @@ target_link_libraries(${PROJECT_NAME}_node
 )
 
 add_executable(pos_command_to_effort
-src/pos_command_to_effort
+src/pos_command_to_effort.cpp
 )
 add_dependencies(pos_command_to_effort ${catkin_EXPORTED_TARGETS})
 target_link_libraries(pos_command_to_effort ${catkin_LIBRARIES})
 
-
+add_executable(circle_motion
+src/circle_motion.cpp
+)
+add_dependencies(circle_motion ${catkin_EXPORTED_TARGETS})
+target_link_libraries(circle_motion ${catkin_LIBRARIES})
 
 
 

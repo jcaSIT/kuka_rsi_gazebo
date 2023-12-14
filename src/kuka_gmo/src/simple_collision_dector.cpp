@@ -116,7 +116,7 @@ void simple_collision_dector::feedbackStateCallback(const control_msgs::JointTra
                 collision = true;
         }
 
-        jnt_torque_external_old->data = jnt_torque_external->data;
+
 
 
         if(collision)
@@ -127,6 +127,8 @@ void simple_collision_dector::feedbackStateCallback(const control_msgs::JointTra
             ros::waitForShutdown();
 
         }
+
+        jnt_torque_external_old->data = jnt_torque_external->data;
     }
 
 

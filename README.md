@@ -29,25 +29,7 @@ To run the postion control demo run:
 
 In a seperate terminal run:
 
-
-rostopic pub /target_pose geometry_msgs/TransformStamped "header:
-  seq: 0
-  stamp:
-    secs: 0
-    nsecs: 0
-  frame_id: ''
-child_frame_id: ''
-transform:
-  translation:
-    x: 1.0
-    y: 0.0
-    z: 0.5
-  rotation:
-    x: 0.0
-    y: 0.707
-    z: 0.0
-    w: 0.707"
-
+rosrun kuka_position_control circle_motion
 ## Trajectory controller
 The trajectory controller is a MoveIt! melodic implementation that is setup to work both as standard or as simulated in Gazebo. The trajectory controller has serveral planners aviable thanks to MoveIt! and is STRICTLY an oflline controller.
 
