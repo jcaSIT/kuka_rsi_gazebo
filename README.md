@@ -17,7 +17,7 @@ To launch a simple demo of the Gazebo simulation, run:
 ```
 roslaunch kuka_kr16_gazebo demo_gazebo.launch
 ```
-
+A Gazebo and an RVIZ window should pop up. Drag the ball or arrows in RVIZ around and press plan and execute. The robot should move in gazebo to the goal pose.
 
 ### GMO Demo
 To run the GMO demo, first launch the Gazebo demo then run:
