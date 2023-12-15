@@ -7,7 +7,7 @@ Lastly, I would like to thank the [Scandinavia-Japan Sasakawa Foundation](https:
 This repo contains an RSI interface and a simulation environment for the KUKA KR16 industrial robot. It was developed for YLab internal use.
 The repo allows for simulation in Gazebo using either trajectory or position control. 
 
-For installation, follow the guide in: [INSTALLATION.md](https://github.com/jcaSIT/kuka_rsi_test/blob/master/INSTALLATION.md)
+For installation, follow the guide in: [INSTALLATION.md](https://github.com/jcaSIT/kuka_rsi_gazebo/blob/master/INSTALLTION.md)
 
 ## Relevant Launch Files
 Some helpful launch files to get you started!
