@@ -79,20 +79,10 @@ void simple_collision_dector::updateExternalWrench()
     robot_dynamics->JntToCoriolis(*q, *qdot, *C);
     robot_dynamics->JntToGravity(*q, *G);
 
-    
-
-
-    ROS_INFO_STREAM("q\n" << q->data << "\n");
-    ROS_INFO_STREAM("qdot\n" << qdot->data << "\n");
-    ROS_INFO_STREAM("qdotdot\n" << qdotdot->data << "\n");
-    ROS_INFO_STREAM("C\n" << C->data << "\n");
-    ROS_INFO_STREAM("B\n" << B->data << "\n");
-
-
 
     // use the DESIRED joint acceleration to calculate the corresponding joint torque
     jnt_torque->data = B->data * qdotdot->data +  C->data.cwiseProduct(qdot->data) + G ->data;
-    ROS_INFO_STREAM("B\n" << jnt_torque->data << "\n");
+
     // estimate the external wrench using the actual joint positions (q), velocities (q_dot) and the joint torque
     extWrenchEstimator->JntToExtWrench(*q, *qdot, *jnt_torque, *wrench);
 
