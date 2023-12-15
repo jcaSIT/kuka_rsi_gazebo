@@ -29,7 +29,7 @@ Then, using RVIZ, generate and execute a plan into the boxes placed by the robot
 ### Position Control Demo
 To run the position control demo, run:
 ```
-roslaunch kuka_position_control kuka_kr16_position_controller.launch
+roslaunch kuka_kr16_gazebo postion_control_gazebo.launch
 ```
 In a separate terminal, run:
 ```
