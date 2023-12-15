@@ -14,26 +14,27 @@ Some helpful launch files to get you started!
 
 ### Gazebo Demo
 To launch a simple demo of the Gazebo simulation, run:
-
- roslaunch kuka_kr16_gazebo demo_gazebo.launch
-
+```
+roslaunch kuka_kr16_gazebo demo_gazebo.launch
+```
 
 
 ### GMO Demo
 To run the GMO demo, first launch the Gazebo demo then run:
-
+```
 roslaunch kuka_gmo kuka_gmo.launch
-
+```
 Then, using RVIZ, generate and execute a plan into the boxes placed by the robot. Upon collision, the robot should stop moving and the momentum observer will throw a collision error.
 
 ### Position Control Demo
 To run the position control demo, run:
-
+```
 roslaunch kuka_position_control kuka_kr16_position_controller.launch
-
+```
 In a separate terminal, run:
-
+```
 rosrun kuka_position_control circle_motion
+```
 ## Trajectory Controller
 The trajectory controller is a MoveIt! Melodic implementation that is set up to work both as standard or as simulated in Gazebo. The trajectory controller has several planners available thanks to MoveIt! and is STRICTLY an offline controller.
 
